@@ -1,0 +1,47 @@
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
+const cors = require('cors');
+app.use(cors());
+const Attendee = require('./attendee');
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+
+// Connect to MongoDB
+mongoose.connect('mongodb+srv://lironamy:Ladygaga2@cluster0.sn5e7l9.mongodb.net/wedding', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// On Connection
+mongoose.connection.on('connected', () => {
+    console.log('Connected to database');
+});
+
+const port = 3000;
+
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+    }
+);
+
+app.post('/register', async (req, res) => {
+    try {
+      const {firstName, phoneNumber, lastName, arriving, guestsAmount, notes } = req.body;
+      console.log('Received registration request:', req.body);
+      const attendee = new Attendee({ firstName, phoneNumber, lastName, arriving, guestsAmount, notes });
+      console.log('Saving to database:', attendee);
+      await attendee.save();
+      console.log('Registration successful');
+      res.status(201).json({ message: 'Registration successful' });
+    } catch (error) {
+      console.error('Failed to register:', error);
+      res.status(500).json({ error: 'Registration failed' });
+    }
+  });
+  
+
+app.listen(port, () => {
+    console.log(`listening at http://localhost:${port}`);
+    }
+);
+
