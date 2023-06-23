@@ -5,11 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "start": "nodemon app.js",
-    "build": "cd backend && npm install  && cd ../frontend && npm install && npm run build",
-    "eject": "react-scripts eject"
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
