@@ -1,0 +1,312 @@
+.Form h2 {
+    padding: 0;
+    margin: 0;
+    color: rgb(137 149 154) !important;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+.formSection{
+    display: flex;
+}
+#guestsAmount{
+    width: 20%;
+    margin: 10px;
+
+}
+
+#submitBtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    padding: 0.5rem;
+}
+
+.Form select {
+    width: 20%;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+    color: #60686f !important;
+    font-weight: 600;
+    text-align-last: center;
+
+}
+.App-logo {
+    width: 150px;
+    pointer-events: none;
+    padding: 0;
+    margin: 0;
+    
+}
+.rings {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.rings img {
+    width: 300px;
+    height: auto;
+  
+}
+
+.invitation {
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    background-image: url('../images/Invitation.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  
+
+body {
+    padding: 20px;
+    background-color:#f0eeeb;
+    direction: rtl;
+
+  }
+  
+  body, p, input, select, textarea, button {
+      font-family: 'Heebo', sans-serif;
+        font-weight: 400;
+      letter-spacing: -0.2px;
+      font-size: 20px;
+  }
+  
+  div, p {
+    color:rgb(87, 94, 98);
+    text-shadow: 1px 1px 1px #FFF;
+  }
+  
+
+  
+  .Form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .segment {
+    padding: 16px*2 0;
+    text-align: center;
+  }
+  
+  button, input , select {
+    border: 0;
+    outline: 0;
+    font-size: 16px;
+    border-radius: 100px;
+    padding: 16px;
+    background-color: #EBECF0;
+    text-shadow: 1px 1px 0 #FFF;
+    color: #61677C;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 16px*1.5;
+    width: 100%;
+  }
+  
+  input{
+    margin-right: 16px/2;
+    box-shadow:  inset 2px 2px 5px #BABECC, inset -5px -5px 10px #FFF;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s ease-in-out;
+    appearance: none;
+    -webkit-appearance: none;
+  
+    &:focus {
+      box-shadow:  inset 1px 1px 2px #BABECC, inset -1px -1px 2px #FFF;
+    }
+  }
+  
+  button, select {
+    color:#61677C;
+    font-weight: bold;
+    box-shadow: -5px -5px 20px #FFF,  5px 5px 20px #BABECC;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    font-weight: 600;
+    
+    &:hover {
+      box-shadow: -2px -2px 5px #FFF, 2px 2px 5px #BABECC;
+    }
+
+
+    
+    &:active {
+      box-shadow: inset 1px 1px 2px #BABECC, inset -1px -1px 2px #FFF;
+    }
+    
+    .icon {
+      margin-right: 16px/2;
+    }
+    
+    .unit {
+      border-radius: 16px/2;
+      line-height: 0;
+      width: 16px*3;
+      height: 16px*3;
+      display:inline-flex;
+      justify-content: center;
+      align-items:center;
+      margin: 0 16px/2;
+      font-size: 16px*1.2;
+      
+      .icon {
+        margin-right: 0; 
+      }
+    }
+    
+    &.red {
+      display: block;
+      width: 100%;
+      color:#AE1100;
+    }
+  }
+  
+  .input-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    
+    label {
+      margin: 0;
+      flex: 1;
+    }
+  }
+
+  .Form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    direction: rtl;
+}
+
+.mainHeader{
+    color: #f13b51;
+    direction: rtl;
+    text-align: center;
+    font-size: 4rem;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    line-height: 1.1;
+}
+
+
+.Form  input {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: #60686f !important;
+    font-weight: 600; 
+}
+
+::placeholder{
+    color: rgb(101, 117, 124);
+    opacity: 0.5;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.Form label{
+    font-weight: 600;
+    color:rgb(137 149 154) !important;
+    font-family: 'Heebo', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.moreInfo{
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    color: #60686f;
+    font-weight: 600;
+    margin-bottom: 10rem;
+    margin-top: 5rem;
+    text-align: center;
+}
+
+.moreInfo button {
+    margin: 50px auto;
+}
+
+
+
+a {
+  text-decoration: none;
+  color: #4a5a67;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  
+
+}
+
+a img{
+    width:80px;
+    padding-right: 10px;
+}
+
+iframe {
+
+    border: 1px solid #4a5a67;
+  }
+
+  .moreInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    direction: rtl;
+    margin-bottom: 25%;
+    color: #323b42;
+  }
+  
+  
+
+@media screen and (max-width: 700px) {
+    .Form{
+       width: 100%;
+       max-width: 90%;
+    }
+    .Form select{
+        width: 50%;
+        
+    }
+    .moreInfo{
+        width: 100%;
+        max-width: 90%;
+    }
+    img {
+        width: 50px;
+      }
+      a {
+        font-size: 1.2rem;
+      }
+      .invitation img {
+        width: 100%;
+      }
+      iframe {
+        width: 95%;
+      }
+}
