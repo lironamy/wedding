@@ -12,17 +12,32 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://lironamy:Ladygaga2@cluster0.sn5e7l9.mongodb.net/wedding', { useNewUrlParser: true, useUnifiedTopology: true });
 
+
+
 // On Connection
 mongoose.connection.on('connected', () => {
     console.log('Connected to database');
 });
 
-const port = 3000;
+const port = 32;
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
     }
 );
+
+app.get('/data', async (req, res) => {
+  try {
+    const data = await Attendee.find();
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Failed to fetch data:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
+
+
 
 app.post('/register', async (req, res) => {
     try {
@@ -40,8 +55,7 @@ app.post('/register', async (req, res) => {
   });
   
 
-app.listen(port, () => {
-    console.log(`listening at http://localhost:${port}`);
+app.listen(port, '0.0.0.0',() => {
+    console.log(`listening at http://154.41.251.163:${port}`);
     }
 );
-
