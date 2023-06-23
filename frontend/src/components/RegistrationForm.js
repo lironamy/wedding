@@ -270,4 +270,4 @@ const RegistrationForm = () => {
 export default RegistrationForm;
 
 
-// mongodb+srv://lironamy:Ladygaga2@cluster0.sn5e7l9.mongodb.net/?retryWrites=true&w=majority
+// mongodb+srv://wedding-hostinger:Ladygaga2@cluster0.sn5e7l9.mongodb.net/wedding?retryWrites=true&w=majority
