@@ -19,7 +19,7 @@ mongoose.connection.on('connected', () => {
     console.log('Connected to database');
 });
 
-const port = 32;
+const port = 3000;
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -56,6 +56,6 @@ app.post('/register', async (req, res) => {
   
 
 app.listen(port, '0.0.0.0',() => {
-    console.log(`listening at http://154.41.251.163:${port}`);
+    console.log(`listening at http://localhost:${port}`);
     }
 );
