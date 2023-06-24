@@ -28,7 +28,7 @@ const DataPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const result = await axios('http://localhost:3000/data');
+            const result = await axios.get('/api/data');
             const data = result.data;
             const arrivingGuests = data.filter((item) => item.arriving === 'לא');
             const guestsAmountNo = arrivingGuests.reduce((acc, item) => acc + (+item.guestsAmount), 0);
@@ -44,7 +44,7 @@ const DataPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const result = await axios('http://localhost:3000/data');
+            const result = await axios.get('/api/data');
             const data = result.data;
             const arrivingGuests = data.filter((item) => item.arriving === 'אולי');
             const guestsAmountMaybe = arrivingGuests.reduce((acc, item) => acc + (+item.guestsAmount), 0);
@@ -67,7 +67,7 @@ const DataPage = () => {
     const [data, setData] = useState([]);
     useEffect(() => {
         const fetchData = async () => {
-            const result = await axios('http://localhost:3000/data');
+            const result = await axios('/api/data');
             setData(result.data);
         };
         fetchData();
