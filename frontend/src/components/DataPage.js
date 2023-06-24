@@ -12,7 +12,7 @@ const DataPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-          const result = await axios('http://localhost:3000/data');
+          const result = await axios.get('/api/data');
           const data = result.data;
           const arrivingGuests = data.filter((item) => item.arriving === 'כן');
           const guestsAmount = arrivingGuests.reduce((acc, item) => acc + (+item.guestsAmount), 0);

@@ -90,7 +90,7 @@ const RegistrationForm = () => {
     e.preventDefault();
     try {
       console.log('Sending a request to the server');
-      const response =  axios.post('http://154.41.251.163:32/register', {
+      const response =  axios.post('/api/register', {
         firstName: formData.firstName,
         phoneNumber: formData.phoneNumber,
         lastName: formData.lastName,
