@@ -12,3 +12,5 @@ const attendeeSchema = new mongoose.Schema({
 const Attendee = mongoose.model('Attendee', attendeeSchema);
 
 module.exports = Attendee;
+
+export default Attendee;
