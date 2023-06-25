@@ -90,7 +90,7 @@ const RegistrationForm = () => {
     e.preventDefault();
     try {
       console.log('Sending a request to the server');
-      const response =  axios.post('/api/register', {
+      const response =  axios.post('http://localhost:3000/api/register', {
         firstName: formData.firstName,
         phoneNumber: formData.phoneNumber,
         lastName: formData.lastName,
@@ -270,4 +270,3 @@ const RegistrationForm = () => {
 export default RegistrationForm;
 
 
-// mongodb+srv://wedding-hostinger:Ladygaga2@cluster0.sn5e7l9.mongodb.net/wedding?retryWrites=true&w=majority

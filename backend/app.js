@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
     }
 );
 
-app.get('https://liron-ola.online/api/data', async (req, res) => {
+app.get('/api/data', async (req, res) => {
   try {
     const data = await Attendee.find();
     res.status(200).json(data);
@@ -39,7 +39,7 @@ app.get('https://liron-ola.online/api/data', async (req, res) => {
 
 
 
-app.post('https://liron-ola.online/api/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     try {
       const {firstName, phoneNumber, lastName, arriving, guestsAmount, notes } = req.body;
       console.log('Received registration request:', req.body);
