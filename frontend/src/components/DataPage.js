@@ -12,7 +12,7 @@ const DataPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-          const result = await axios.get('http://localhost:3000/api/data')
+          const result = await axios.get('https://wedding-api-i272.onrender.com/api/data')
           ;
           const data = result.data;
           const arrivingGuests = data.filter((item) => item.arriving === 'כן');
@@ -29,7 +29,7 @@ const DataPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const result = await axios.get('http://localhost:3000/api/data')
+            const result = await axios.get('https://wedding-api-i272.onrender.com/api/data')
             ;
             const data = result.data;
             const arrivingGuests = data.filter((item) => item.arriving === 'לא');
@@ -46,7 +46,7 @@ const DataPage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const result = await axios.get('http://localhost:3000/api/data');            ;
+            const result = await axios.get('https://wedding-api-i272.onrender.com/api/data');            ;
             const data = result.data;
             const arrivingGuests = data.filter((item) => item.arriving === 'אולי');
             const guestsAmountMaybe = arrivingGuests.reduce((acc, item) => acc + (+item.guestsAmount), 0);
@@ -69,7 +69,7 @@ const DataPage = () => {
     const [data, setData] = useState([]);
     useEffect(() => {
         const fetchData = async () => {
-            const result = await axios('http://localhost:3000/api/data')
+            const result = await axios('https://wedding-api-i272.onrender.com/api/data')
             ;
             setData(result.data);
         };

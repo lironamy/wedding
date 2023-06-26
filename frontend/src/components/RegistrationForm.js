@@ -90,7 +90,7 @@ const RegistrationForm = () => {
     e.preventDefault();
     try {
       console.log('Sending a request to the server');
-      const response =  axios.post('http://localhost:3000/api/register', {
+      const response =  axios.post('https://wedding-api-i272.onrender.com/api/register', {
         firstName: formData.firstName,
         phoneNumber: formData.phoneNumber,
         lastName: formData.lastName,
