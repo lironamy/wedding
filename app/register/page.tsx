@@ -1,15 +1,15 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from 'next/navigation' // Import useRouter
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Heart, Mail, Lock, User } from "lucide-react"
+import { Heart, Mail, Lock, User, AlertCircle, CheckCircle } from "lucide-react" // Added AlertCircle and CheckCircle
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -18,29 +18,75 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const router = useRouter() // Initialize useRouter
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value })
+    // Clear errors/success messages when user starts typing again
+    setError(null)
+    setSuccess(null)
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+    setSuccess(null)
+
     if (formData.password !== formData.confirmPassword) {
-      alert("הסיסמאות לא תואמות!")
+      setError("הסיסמאות אינן תואמות!")
       return
     }
-    // Handle registration
-    console.log("Register:", formData)
-    // Redirect to dashboard after successful registration
-    window.location.href = "/dashboard"
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.message || `שגיאה בעת ההרשמה: ${response.statusText}`)
+      } else {
+        setSuccess(data.message || "ההרשמה בוצעה בהצלחה! הנך מועבר/ת ללוח הבקרה.")
+        // Clear form
+        setFormData({ name: "", email: "", password: "", confirmPassword: ""});
+        // Redirect to dashboard after a short delay
+        setTimeout(() => {
+          router.push('/dashboard')
+        }, 2000)
+      }
+    } catch (err) {
+      console.error("Register fetch error:", err)
+      setError("אירעה שגיאה בלתי צפויה. נסו שוב מאוחר יותר.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
+  // Placeholder for OAuth, not implemented in this scope
   const handleGoogleSignup = () => {
-    // Handle Google OAuth signup
     console.log("Google signup")
-    window.location.href = "/dashboard"
+    setError("הרשמה עם גוגל עדיין לא נתמכת.")
+    // window.location.href = "/dashboard"
   }
 
   const handleFacebookSignup = () => {
-    // Handle Facebook OAuth signup
     console.log("Facebook signup")
-    window.location.href = "/dashboard"
+    setError("הרשמה עם פייסבוק עדיין לא נתמכת.")
+    // window.location.href = "/dashboard"
   }
 
   return (
@@ -57,6 +103,18 @@ export default function RegisterPage() {
           <CardDescription>התחילו לתכנן את החתונה המושלמת שלכם</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {error && (
+            <div className="flex items-center p-3 text-sm text-red-700 bg-red-100 rounded-md border border-red-200">
+              <AlertCircle className="w-5 h-5 ml-2" />
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="flex items-center p-3 text-sm text-green-700 bg-green-100 rounded-md border border-green-200">
+              <CheckCircle className="w-5 h-5 ml-2" />
+              {success}
+            </div>
+          )}
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">שם מלא</Label>
@@ -67,9 +125,10 @@ export default function RegisterPage() {
                   type="text"
                   placeholder="השם המלא שלכם"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={handleChange}
                   className="pr-10"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -82,9 +141,10 @@ export default function RegisterPage() {
                   type="email"
                   placeholder="your@email.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={handleChange}
                   className="pr-10"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -95,11 +155,12 @@ export default function RegisterPage() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="צרו סיסמה"
+                  placeholder="צרו סיסמה (לפחות 6 תווים)"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={handleChange}
                   className="pr-10"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -112,24 +173,25 @@ export default function RegisterPage() {
                   type="password"
                   placeholder="אשרו את הסיסמה שלכם"
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onChange={handleChange}
                   className="pr-10"
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full">
-              צרו חשבון
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "יוצר חשבון..." : "צרו חשבון"}
             </Button>
           </form>
 
           <Separator />
 
           <div className="space-y-2">
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignup}>
+            <Button variant="outline" className="w-full" onClick={handleGoogleSignup} disabled={isLoading}>
               הרשמה עם Google
             </Button>
-            <Button variant="outline" className="w-full" onClick={handleFacebookSignup}>
+            <Button variant="outline" className="w-full" onClick={handleFacebookSignup} disabled={isLoading}>
               הרשמה עם Facebook
             </Button>
           </div>
