@@ -1,18 +1,48 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Heart, Calendar, Users, Camera, Settings, LogOut } from "lucide-react"
+import { Heart, Calendar, Users, Camera, Settings, LogOut, Upload, Loader2 } from "lucide-react"
+import { useAuth } from "../context/AuthContext"
+import { CldUploadWidget } from "next-cloudinary"
 
 export default function DashboardPage() {
-  const [user] = useState({ name: "שרה ויוחנן", email: "sarah@example.com" })
+  const { user, logout, isLoading } = useAuth()
+  const router = useRouter()
+  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, isLoading, router])
 
   const handleLogout = () => {
-    // Handle logout
-    window.location.href = "/"
+    logout()
+  }
+
+  const handleUploadSuccess = (result: any) => {
+    if (result.event === 'success') {
+      setUploadedPhotos(prev => [...prev, result.info.secure_url])
+    }
+    setIsUploading(false)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-pink-500" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null
   }
 
   return (
@@ -120,8 +150,58 @@ export default function DashboardPage() {
                 <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
                   <Camera className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <p className="text-gray-600 mb-4">העלו את תמונות החתונה שלכם כאן</p>
-                  <Button>העלו תמונות</Button>
+                  <CldUploadWidget
+                    options={{
+                      sources: ['local', 'camera'],
+                      multiple: true,
+                      maxFiles: 10,
+                      resourceType: 'image',
+                      folder: 'wedding-photos'
+                    }}
+                    onSuccess={handleUploadSuccess}
+                    onError={(error) => {
+                      console.error('Upload error:', error)
+                      setIsUploading(false)
+                    }}
+                  >
+                    {({ open }) => (
+                      <Button
+                        onClick={() => {
+                          setIsUploading(true)
+                          open()
+                        }}
+                        disabled={isUploading}
+                      >
+                        {isUploading ? (
+                          <>
+                            <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                            מעלה...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4 ml-2" />
+                            העלו תמונות
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </CldUploadWidget>
                 </div>
+
+                {uploadedPhotos.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+                    {uploadedPhotos.map((photo, index) => (
+                      <div key={index} className="relative aspect-square">
+                        <img
+                          src={photo}
+                          alt={`תמונת חתונה ${index + 1}`}
+                          className="object-cover w-full h-full rounded-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <div className="text-sm text-gray-600">
                   <p>• הבינה המלאכותית תזהה אוטומטית אורחים בתמונות</p>
                   <p>• האורחים יקבלו התראות כשהתמונות שלהם מוכנות</p>

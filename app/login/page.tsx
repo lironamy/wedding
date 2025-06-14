@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Heart, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react" // Added AlertCircle and CheckCircle
+import { useAuth } from '../context/AuthContext'
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null) // Added success state
   const router = useRouter() // Initialize useRouter
+  const { setUser } = useAuth()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,6 +42,7 @@ export default function LoginPage() {
         setError(data.message || `שגיאה בעת ההתחברות: ${response.statusText}`)
       } else {
         setSuccess(data.message || "התחברת בהצלחה! הנך מועבר/ת ללוח הבקרה.")
+        setUser(data.user)
         // Clear form
         setEmail("")
         setPassword("")
@@ -155,6 +158,3 @@ export default function LoginPage() {
     </div>
   )
 }
-EOF
-
-echo "Updated app/login/page.tsx to call the login API and handle responses."
