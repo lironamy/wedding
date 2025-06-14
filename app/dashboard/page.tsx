@@ -1,14 +1,42 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react" // Added useEffect for potential future data fetching
 import Link from "next/link"
+import Image from "next/image" // Import next/image
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Heart, Calendar, Users, Camera, Settings, LogOut } from "lucide-react"
+import { Heart, Calendar, Users, Camera, Settings, LogOut, CheckCircle, AlertTriangle, UserCircle, ImageUp } from "lucide-react" // Added icons
+import { ImageUpload } from "@/components/ui/image-upload"; // Import the new component
 
 export default function DashboardPage() {
-  const [user] = useState({ name: "שרה ויוחנן", email: "sarah@example.com" })
+  // --- Placeholder User State ---
+  // In a real app, this would come from an auth context or API call after login.
+  // Added faceMatchResult for demonstration.
+  const [user, setUser] = useState<any>({ // Using 'any' for simplicity, define a proper type in a real app
+    name: "אורח משני", // Example: Secondary User
+    email: "secondary@example.com",
+    role: "secondary", // Assuming role is available
+    isSecondaryUser: true, // Assuming this flag is available
+    // Example faceMatchResult - this would be populated after login
+    faceMatchResult: {
+      matched: true,
+      distance: 0.45,
+      mainImageUsed: "/uploads/main-images/example-main-image.jpg", // Placeholder path
+      bestMatchLabel: "main_user_face_0"
+    }
+  });
+
+  // Example of how you might fetch user data in a real app
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     // Replace with your actual API call to get user data
+  //     // const response = await fetch('/api/user');
+  //     // const data = await response.json();
+  //     // setUser(data.user);
+  //   };
+  //   fetchUserData();
+  // }, []);
 
   const handleLogout = () => {
     // Handle logout
@@ -39,6 +67,50 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">לוח הבקרה של החתונה</h1>
           <p className="text-gray-600">נהלו את תכנון החתונה וחוויית האורחים שלכם</p>
         </div>
+
+        {/* --- Display Matched Image Section --- */}
+        {user && user.isSecondaryUser && user.faceMatchResult && (
+          <Card className="mb-6 bg-blue-50 border-blue-200">
+            <CardHeader>
+              <CardTitle className="flex items-center text-blue-700">
+                <Camera className="h-5 w-5 ml-2" />
+                זיהוי פנים ותמונות משותפות
+              </CardTitle>
+              <CardDescription className="text-blue-600">
+                הנה התמונה הראשית מהאירוע שבה זוהית.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {user.faceMatchResult.matched && user.faceMatchResult.mainImageUsed ? (
+                <div className="text-center">
+                  <p className="text-green-700 font-semibold mb-2 flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 ml-2 text-green-500" />
+                    זוהית בהצלחה בתמונה מהאירוע! (מרחק: {user.faceMatchResult.distance.toFixed(2)})
+                  </p>
+                  <div className="relative w-full max-w-md mx-auto h-64 md:h-96 border rounded-lg overflow-hidden">
+                    <Image
+                      src={user.faceMatchResult.mainImageUsed}
+                      alt="תמונה ראשית מהאירוע בה זוהית"
+                      layout="fill"
+                      objectFit="contain" // Or "cover" depending on desired behavior
+                      priority // If this is an important image
+                    />
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">
+                    תמונה: {user.faceMatchResult.mainImageUsed.split('/').pop()}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-red-700 font-semibold flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 ml-2 text-red-500" />
+                  לא זוהתה התאמה בתמונות האירוע או שהתמונה הראשית אינה זמינה.
+                  {user.faceMatchResult.error && <span className="ml-1">({user.faceMatchResult.error})</span>}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+        {/* --- End Display Matched Image Section --- */}
 
         <Tabs defaultValue="rsvp" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
@@ -114,17 +186,83 @@ export default function DashboardPage() {
                   <Camera className="h-5 w-5 ml-2" />
                   שיתוף תמונות
                 </CardTitle>
-                <CardDescription>העלו ושתפו תמונות חתונה עם זיהוי אורחים חכם</CardDescription>
+                <CardDescription>העלו ושתפו תמונות חתונה עם זיהוי אורחים חכם. תמונות אלו ישמשו לזיהוי פנים.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg">
-                  <Camera className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600 mb-4">העלו את תמונות החתונה שלכם כאן</p>
-                  <Button>העלו תמונות</Button>
-                </div>
-                <div className="text-sm text-gray-600">
-                  <p>• הבינה המלאכותית תזהה אוטומטית אורחים בתמונות</p>
-                  <p>• האורחים יקבלו התראות כשהתמונות שלהם מוכנות</p>
+              <CardContent className="space-y-6">
+                {/* Main User Image Upload Section */}
+                {!user?.isSecondaryUser && ( // Show if NOT a secondary user (i.e., a main user)
+                  <div className="p-6 border rounded-lg shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center">
+                      <ImageUp className="h-5 w-5 mr-2 text-pink-500" />
+                      העלאת תמונה ראשית (שלכם)
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">
+                      העלו תמונה ברורה שלכם. תמונה זו תשמש כבסיס לזיהוי פנים שלכם בתמונות האורחים.
+                    </p>
+                    <ImageUpload
+                      uploadUrl="/api/upload-main-image"
+                      onUploadSuccess={(response) => {
+                        console.log("Main image uploaded:", response.filePath);
+                        // Potentially update user state or show preview
+                        setUser((prevUser: any) => ({
+                          ...prevUser,
+                          mainImagePath: response.filePath, // Assuming you store this
+                        }));
+                      }}
+                      onUploadError={(error) => console.error("Main image upload error:", error)}
+                      buttonText="העלה תמונה ראשית"
+                    />
+                    {user?.mainImagePath && (
+                       <div className="mt-4">
+                         <p className="text-sm font-medium text-gray-700">תמונה ראשית נוכחית:</p>
+                         <Image src={user.mainImagePath} alt="Main user image" width={100} height={100} className="rounded border mt-1" />
+                       </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Secondary User Image Upload Section */}
+                {user?.isSecondaryUser && ( // Show only if a secondary user
+                  <div className="p-6 border rounded-lg shadow-sm">
+                    <h3 className="text-lg font-semibold mb-3 flex items-center">
+                      <UserCircle className="h-5 w-5 mr-2 text-blue-500" />
+                      העלאת תמונת פרופיל (לזיהוי)
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4">
+                      העלו תמונה ברורה של הפנים שלכם. תמונה זו תעזור לנו למצוא אתכם בתמונות האירוע.
+                    </p>
+                    <ImageUpload
+                      uploadUrl="/api/upload-secondary-image"
+                      onUploadSuccess={(response) => {
+                        console.log("Secondary image uploaded:", response.filePath);
+                        // Potentially update user state or show preview
+                         setUser((prevUser: any) => ({
+                          ...prevUser,
+                          secondaryImagePath: response.filePath, // Assuming you store this
+                          faceMatchResult: { // Reset or update face match result as new image is uploaded
+                            ...prevUser.faceMatchResult,
+                            matched: false, // Needs re-evaluation
+                            error: "New image uploaded, please re-login to attempt face match."
+                          }
+                        }));
+                      }}
+                      onUploadError={(error) => console.error("Secondary image upload error:", error)}
+                      buttonText="העלה תמונת פרופיל"
+                    />
+                     {user?.secondaryImagePath && (
+                       <div className="mt-4">
+                         <p className="text-sm font-medium text-gray-700">תמונת פרופיל נוכחית:</p>
+                         <Image src={user.secondaryImagePath} alt="Secondary user image" width={100} height={100} className="rounded border mt-1" />
+                       </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-6 text-sm text-gray-600 bg-gray-50 p-4 rounded-md">
+                  <p className="font-semibold mb-1">כיצד פועל זיהוי הפנים:</p>
+                  <p>• <strong>משתמשים ראשיים:</strong> העלו תמונה ברורה שלכם. המערכת תשתמש בתמונה זו כדי לזהות אתכם בתמונות שיעלו האורחים.</p>
+                  <p>• <strong>אורחים (משתמשים משניים):</strong> העלו תמונת פרופיל ברורה. לאחר מכן, בעת התחברות, המערכת תנסה להתאים את פניכם לתמונות מהאירוע שהועלו על ידי המשתמשים הראשיים.</p>
+                  <p>• האורחים יקבלו התראות כשהתמונות שלהם מוכנות ויוכלו לראות את התמונה הראשית שבה זוהו.</p>
                   <p>• כל אורח יקבל גישה רק לתמונות שלו</p>
                 </div>
               </CardContent>
