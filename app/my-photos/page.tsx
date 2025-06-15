@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Loader2, CameraOff, Heart, LogOut, AlertTriangle, CheckCircle } from "lucide-react";
+import { getOptimizedImageUrl } from "../../lib/cloudinary"; // Import the helper function
 
 interface Photo {
   _id: string;
@@ -186,7 +187,12 @@ export default function MyPhotosPage() {
               <Card key={photo._id} className="overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 group rounded-lg flex flex-col">
                 <div className="relative aspect-[3/4] w-full"> {/* Aspect ratio for portrait-like images */}
                   <img
-                    src={photo.imageUrl}
+                    src={getOptimizedImageUrl(photo.cloudinaryPublicId, {
+                      width: 600,
+                      quality: 'auto',
+                      format: 'auto',
+                      crop: 'limit'
+                    })}
                     alt={`תמונה מהחתונה ${photo._id}`}
                     className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                     loading="lazy" // Lazy loading for images
