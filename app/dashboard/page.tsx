@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Heart, Calendar, Users, Camera, Settings, LogOut, Upload, Loader2, Mail, ListPlus, Send, Zap } from "lucide-react"
+import { getOptimizedImageUrl } from "@/lib/cloudinary" // Import the helper function
 import { useAuth } from "../context/AuthContext"
 
 export default function DashboardPage() {
@@ -17,7 +18,7 @@ export default function DashboardPage() {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null)
   const [uploading, setUploading] = useState(false)
   const [uploadMessage, setUploadMessage] = useState<string | null>(null)
-  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([])
+  const [uploadedImageUrls, setUploadedImageUrls] = useState<{ imageUrl: string, publicId: string }[]>([]) // Modified state type
 
   // State for contact management
   const [contactsJson, setContactsJson] = useState<string>('[\n  {\n    "name": "Yossi Cohen",\n    "phoneNumber": "+972501234567"\n  },\n  {\n    "name": "Sara Levi",\n    "phoneNumber": "+972529876543"\n  }\n]')
@@ -73,7 +74,11 @@ export default function DashboardPage() {
       if (response.ok) {
         setUploadMessage(result.message || `${selectedFiles.length} קבצים הועלו בהצלחה!`)
         if (result.photos && Array.isArray(result.photos)) {
-          setUploadedImageUrls(result.photos.map((p: any) => p.imageUrl))
+          // Store both imageUrl and publicId
+          setUploadedImageUrls(result.photos.map((p: any) => ({
+            imageUrl: p.imageUrl,
+            publicId: p.cloudinaryPublicId }))
+          )
         }
       } else {
         setUploadMessage(result.message || "העלאת הקבצים נכשלה.")
@@ -279,9 +284,17 @@ export default function DashboardPage() {
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold text-gray-700 mb-3">תצוגה מקדימה של תמונות שהועלו בבאצ' האחרון:</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {uploadedImageUrls.map((url, index) => (
-                        <div key={index} className="relative aspect-square rounded-md overflow-hidden shadow">
-                          <img src={url} alt={`Uploaded wedding photo preview ${index + 1}`} className="object-cover w-full h-full" />
+                      {uploadedImageUrls.map((photo, index) => (
+                        <div key={photo.publicId || index} className="relative aspect-square rounded-md overflow-hidden shadow">
+                          <img
+                            src={getOptimizedImageUrl(photo.publicId, {
+                              width: 400,
+                              quality: 'auto',
+                              format: 'auto',
+                              crop: 'limit'
+                            })}
+                            alt={`Uploaded wedding photo preview ${index + 1}`}
+                            className="object-cover w-full h-full" />
                         </div>
                       ))}
                     </div>
