@@ -1,35 +1,16 @@
 import { NextResponse } from 'next/server';
-import { MongoClient, Db } from 'mongodb';
 import bcrypt from 'bcryptjs';
-
-// Connection URI - ensure your MONGODB_URI is set in .env.local
-const uri = process.env.MONGODB_URI;
-if (!uri) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
-}
-
-let client: MongoClient;
-let db: Db;
-
-async function connectToDatabase() {
-  if (!client || !client.topology || !client.topology.isConnected()) {
-    client = new MongoClient(uri!);
-    await client.connect();
-    // Use a specific database name, e.g., 'wadding-ai-app' from your connection string
-    // It's good practice to not use the default 'test' database for applications.
-    // Extracting from URI or setting explicitly:
-    const dbName = new URL(uri!).pathname.substring(1) || 'wadding-ai-app';
-    db = client.db(dbName);
-  }
-  return db;
-}
+import dbConnect from '@/lib/mongodb'; // Import Mongoose connection utility
+import User from '@/models/User'; // Import Mongoose User model
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password } = await request.json();
+    await dbConnect(); // Ensure database is connected
 
-    if (!name || !email || !password) {
-      return NextResponse.json({ message: 'Missing required fields (name, email, password)' }, { status: 400 });
+    const { name, email, password, phoneNumber, userType } = await request.json();
+
+    if (!name || !email || !password || !phoneNumber) {
+      return NextResponse.json({ message: 'Missing required fields (name, email, password, phoneNumber)' }, { status: 400 });
     }
 
     // Basic email validation
@@ -42,11 +23,8 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: 'Password must be at least 6 characters long' }, { status: 400 });
     }
 
-    const database = await connectToDatabase();
-    const usersCollection = database.collection('users');
-
     // Check if user already exists
-    const existingUser = await usersCollection.findOne({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 }); // 409 Conflict
     }
@@ -54,25 +32,38 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds: 10
 
-    // Insert new user
-    const result = await usersCollection.insertOne({
+    // Create new user with Mongoose
+    const newUser = new User({
       name,
       email,
       password: hashedPassword,
-      createdAt: new Date(),
+      phoneNumber,
+      userType: userType || 'guest', // Default to 'guest' if not provided
+      isVerified: false, // Default to false, verification flow needed
     });
 
+    await newUser.save();
+
     // Remove password from the user object returned to the client
-    const newUser = {
-        _id: result.insertedId,
-        name,
-        email,
-        createdAt: new Date()
+    // Mongoose's .toJSON() or a custom transform can also handle this
+    const userToReturn = {
+        _id: newUser._id.toString(),
+        userType: newUser.userType,
+        name: newUser.name,
+        email: newUser.email,
+        phoneNumber: newUser.phoneNumber,
+        isVerified: newUser.isVerified,
+        createdAt: newUser.createdAt,
+        updatedAt: newUser.updatedAt,
     };
 
-    return NextResponse.json({ message: 'User registered successfully', user: newUser }, { status: 201 });
+    return NextResponse.json({ message: 'User registered successfully', user: userToReturn }, { status: 201 });
   } catch (error) {
     console.error('Registration error:', error);
+    // Handle Mongoose validation errors specifically if needed
+    if (error.name === 'ValidationError') {
+      return NextResponse.json({ message: 'Validation Error', errors: error.errors }, { status: 400 });
+    }
     // Check if the error is a known type, otherwise generic message
     if (error instanceof Error) {
         return NextResponse.json({ message: `Internal server error: ${error.message}` }, { status: 500 });
